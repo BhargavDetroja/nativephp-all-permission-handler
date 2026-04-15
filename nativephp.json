@@ -1,0 +1,100 @@
+{
+    "namespace": "AllPermissionHandler",
+    "keywords": [
+        "permissions",
+        "nativephp",
+        "android",
+        "ios",
+        "mobile"
+    ],
+    "category": "utilities",
+    "license": "MIT",
+    "pricing": {
+        "type": "free"
+    },
+    "author": {
+        "name": "Bhargav",
+        "email": "bdetroja55@gmail.com",
+        "url": "https://www.bhargavdetroja.com/"
+    },
+    "homepage": "https://www.bhargavdetroja.com/",
+    "repository": "https://github.com/BhargavDetroja/nativephp-all-permission-handler.git",
+    "funding": [],
+    "platforms": [
+        "android",
+        "ios"
+    ],
+    "icon": "resources/icon.png",
+    "screenshots": [],
+    "bridge_functions": [
+        {
+            "name": "AllPermissionHandler.Check",
+            "android": "com.nativephp.plugins.all_permission_handler.AllPermissionHandlerFunctions.Check",
+            "ios": "AllPermissionHandlerFunctions.Check",
+            "description": "Check permission status"
+        },
+        {
+            "name": "AllPermissionHandler.Request",
+            "android": "com.nativephp.plugins.all_permission_handler.AllPermissionHandlerFunctions.Request",
+            "ios": "AllPermissionHandlerFunctions.Request",
+            "description": "Request a permission"
+        },
+        {
+            "name": "AllPermissionHandler.RequestMultiple",
+            "android": "com.nativephp.plugins.all_permission_handler.AllPermissionHandlerFunctions.RequestMultiple",
+            "ios": "AllPermissionHandlerFunctions.RequestMultiple",
+            "description": "Request multiple permissions"
+        },
+        {
+            "name": "AllPermissionHandler.ServiceStatus",
+            "android": "com.nativephp.plugins.all_permission_handler.AllPermissionHandlerFunctions.ServiceStatus",
+            "ios": "AllPermissionHandlerFunctions.ServiceStatus",
+            "description": "Get service status"
+        },
+        {
+            "name": "AllPermissionHandler.OpenAppSettings",
+            "android": "com.nativephp.plugins.all_permission_handler.AllPermissionHandlerFunctions.OpenAppSettings",
+            "ios": "AllPermissionHandlerFunctions.OpenAppSettings",
+            "description": "Open the application settings page"
+        },
+        {
+            "name": "AllPermissionHandler.ShouldShowRequestRationale",
+            "android": "com.nativephp.plugins.all_permission_handler.AllPermissionHandlerFunctions.ShouldShowRequestRationale",
+            "ios": "AllPermissionHandlerFunctions.ShouldShowRequestRationale",
+            "description": "Determine if permission rationale should be shown"
+        }
+    ],
+    "android": {
+        "min_version": 21,
+        "permissions": [],
+        "repositories": [],
+        "dependencies": {
+            "implementation": []
+        },
+        "activities": [],
+        "services": [],
+        "receivers": [],
+        "providers": []
+    },
+    "ios": {
+        "min_version": "15.0",
+        "permissions": [],
+        "info_plist": {},
+        "repositories": [],
+        "dependencies": {
+            "swift_packages": [],
+            "pods": []
+        }
+    },
+    "assets": {
+        "android": [],
+        "ios": []
+    },
+    "secrets": [],
+    "events": [
+        "Nativephp\\AllPermissionHandler\\Events\\AllPermissionHandlerCompleted"
+    ],
+    "hooks": {
+        "copy_assets": "nativephp:all-permission-handler:copy-assets"
+    }
+}
