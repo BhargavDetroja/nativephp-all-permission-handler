@@ -261,6 +261,8 @@ describe('Lifecycle Hooks', function () {
         expect($content)->toContain('PermissionMetadata::normalizeEnabledPermissions');
         expect($content)->toContain('all-permission-handler.generated.');
         expect($content)->toContain('.json');
+        expect($content)->toContain('IosInfoPlistMerger');
+        expect($content)->toContain('mergeIosInfoPlistIntoNativeProject');
     });
 
     it('has valid assets configuration', function () {

@@ -6,6 +6,17 @@ The format follows Keep a Changelog principles and semantic versioning.
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-04-18
+
+### Fixed
+- iOS: merge config-driven `ios_info_plist` usage description keys into `NativePHP-simulator-Info.plist` and `NativePHP/Info.plist` during the `copy-assets` hook (DOM-based XML plist merge), fixing TCC termination when camera (or other) APIs run without keys that were only present in generated JSON.
+
+### Added
+- `IosInfoPlistMerger` support class and Pest tests for plist merge behaviour.
+
+### Changed
+- README: full rewrite with table of contents, 7-step quick start, clearer installation/config/verify flow, consolidated examples and troubleshooting.
+
 ## [1.0.1] - 2026-04-18
 
 ### Fixed

@@ -3,6 +3,7 @@
 namespace Nativephp\AllPermissionHandler\Commands;
 
 use Native\Mobile\Plugins\Commands\NativePluginHookCommand;
+use Nativephp\AllPermissionHandler\Support\IosInfoPlistMerger;
 use Nativephp\AllPermissionHandler\Support\PermissionMetadata;
 
 class CopyAssetsCommand extends NativePluginHookCommand
@@ -68,6 +69,41 @@ class CopyAssetsCommand extends NativePluginHookCommand
         $this->writeGeneratedMetadata('ios', $payload);
 
         $this->info('Generated iOS Info.plist metadata for AllPermissionHandler.');
+
+        $this->mergeIosInfoPlistIntoNativeProject($iosInfoPlist);
+    }
+
+    /**
+     * NativePHP reads static keys from nativephp.json only; generated JSON is not applied automatically.
+     * Merge config-derived usage strings into the real Xcode Info.plists next to the iOS build path.
+     *
+     * @param  array<string, string>  $iosInfoPlist
+     */
+    protected function mergeIosInfoPlistIntoNativeProject(array $iosInfoPlist): void
+    {
+        if ($iosInfoPlist === []) {
+            return;
+        }
+
+        $base = rtrim($this->buildPath(), '/');
+        $targets = [
+            $base.'/NativePHP-simulator-Info.plist',
+            $base.'/NativePHP/Info.plist',
+        ];
+
+        foreach ($targets as $plistPath) {
+            if (! is_file($plistPath)) {
+                continue;
+            }
+
+            if (! IosInfoPlistMerger::mergeFile($plistPath, $iosInfoPlist)) {
+                $this->warn("Could not merge usage descriptions into: {$plistPath}");
+
+                continue;
+            }
+
+            $this->info("Merged usage descriptions into: {$plistPath}");
+        }
     }
 
     /**
