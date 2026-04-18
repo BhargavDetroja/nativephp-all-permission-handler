@@ -57,6 +57,20 @@ object AllPermissionHandlerFunctions {
         } else {
             arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
         },
+        "mediaLibrary" to if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            arrayOf(
+                Manifest.permission.READ_MEDIA_IMAGES,
+                Manifest.permission.READ_MEDIA_VIDEO,
+                Manifest.permission.READ_MEDIA_AUDIO,
+            )
+        } else {
+            arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+        },
+        "access_media_location" to if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            arrayOf(Manifest.permission.ACCESS_MEDIA_LOCATION)
+        } else {
+            emptyArray()
+        },
         "sms" to arrayOf(Manifest.permission.SEND_SMS, Manifest.permission.RECEIVE_SMS, Manifest.permission.READ_SMS),
         "speech" to arrayOf(Manifest.permission.RECORD_AUDIO),
         "storage" to if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

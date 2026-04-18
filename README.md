@@ -11,13 +11,45 @@ This plugin provides a Flutter `permission_handler`-aligned API surface for:
 - checking service status where relevant
 - opening app settings
 
-## Installation
+## Prerequisites
+
+- A Laravel app with **[NativePHP Mobile v3](https://nativephp.com/docs/mobile/3/getting-started/installation)** installed and scaffolded (`nativephp/mobile` in `composer.json`, `php artisan native:install` or equivalent per docs).
+- Without this, Composer may install the plugin, but **native bridge code will not compile** and you will see errors like `NativeServiceProvider not found` or missing native classes.
+
+## Installation (order matters)
+
+Run these commands in your **host Laravel + NativePHP Mobile** project:
 
 ```bash
 composer require bhargavdetroja/nativephp-all-permission-handle
+
+# 1) Creates app/Providers/NativeServiceProvider.php (required before register)
+php artisan vendor:publish --tag=nativephp-plugins-provider
+
+# 2) Registers this plugin so Swift/Kotlin is included in native builds
 php artisan native:plugin:register bhargavdetroja/nativephp-all-permission-handle
+
+# 3) App-level permission config (safe-by-default: enable what you use)
 php artisan vendor:publish --tag=all-permission-handler-config
 ```
+
+Verify the plugin is visible:
+
+```bash
+php artisan native:plugin:list
+```
+
+Then **rebuild / run** the native app (e.g. `php artisan native:run`) so generated permission metadata and native code are applied.
+
+### Troubleshooting
+
+| Symptom | Likely cause | What to do |
+| -------- | ------------- | ---------- |
+| `NativeServiceProvider not found` | Skipped step 1 | Run `vendor:publish --tag=nativephp-plugins-provider`, then `native:plugin:register` again. |
+| `Class ... NativePluginHookCommand not found` | `nativephp/mobile` missing or old | `composer require nativephp/mobile:^3.0`, run `composer update`, clear caches. |
+| iOS crash: `TCC` / `NSCameraUsageDescription` (or other `NS*UsageDescription`) | Permission used in code but not enabled / no usage string | Set `enabled_permissions` and `ios_usage_descriptions` in `config/all-permission-handler.php`, rebuild iOS; delete old simulator install if needed. |
+| Permission always `denied` on device | Plugin not registered or stale build | Confirm `native:plugin:list`, then clean rebuild. On Android, ensure the permission key matches the PHP enum (e.g. `mediaLibrary`, `access_media_location`). |
+| Works on web/CLI, not in app | `nativephp_call` only exists in the native shell | Test inside NativePHP mobile runtime, not `php artisan serve` only. |
 
 ## Safe-by-default permission setup
 
@@ -49,6 +81,104 @@ Available `preset` values:
 - `full`
 
 `preset` values are merged with `enabled_permissions`.
+
+## Minimal camera demo (copy-paste)
+
+Do the [installation](#installation-order-matters) steps once, then set `config/all-permission-handler.php` to at least:
+
+```php
+<?php
+
+return [
+    'enabled_permissions' => ['camera'],
+    'preset' => 'none',
+    'ios_usage_descriptions' => [
+        'NSCameraUsageDescription' => 'This screen needs the camera for the demo.',
+    ],
+];
+```
+
+Rebuild the native app after changing config (`php artisan native:run` or your usual iOS/Android flow).
+
+### Option A — one route (fastest)
+
+`routes/web.php`:
+
+```php
+use Illuminate\Support\Facades\Route;
+use Nativephp\AllPermissionHandler\Facades\AllPermissionHandler;
+use Nativephp\AllPermissionHandler\Enums\Permission;
+
+Route::get('/demo/camera', function () {
+    $status = AllPermissionHandler::request(Permission::Camera);
+
+    return response('Camera status: '.$status->name, 200, ['Content-Type' => 'text/plain; charset=UTF-8']);
+});
+```
+
+Open `/demo/camera` in the **NativePHP mobile app** (not only the browser). You should get the system camera prompt.
+
+### Option B — Livewire button
+
+`app/Livewire/CameraDemo.php`:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\Livewire;
+
+use Livewire\Component;
+use Nativephp\AllPermissionHandler\Facades\AllPermissionHandler;
+use Nativephp\AllPermissionHandler\Enums\Permission;
+
+class CameraDemo extends Component
+{
+    public string $cameraStatus = 'not asked';
+
+    public function requestCamera(): void
+    {
+        $this->cameraStatus = AllPermissionHandler::request(Permission::Camera)->name;
+    }
+
+    public function render()
+    {
+        return view('livewire.camera-demo');
+    }
+}
+```
+
+`resources/views/livewire/camera-demo.blade.php`:
+
+```blade
+<div class="p-4">
+    <button type="button" wire:click="requestCamera"
+        class="rounded-lg bg-neutral-900 px-4 py-2 text-white active:opacity-80">
+        Request camera
+    </button>
+    <p class="mt-3 text-sm text-neutral-600">Status: <strong>{{ $cameraStatus }}</strong></p>
+</div>
+```
+
+`routes/web.php`:
+
+```php
+use App\Livewire\CameraDemo;
+use Illuminate\Support\Facades\Route;
+
+Route::get('/demo/camera', CameraDemo::class);
+```
+
+### Option C — JavaScript (Inertia / Vite)
+
+```javascript
+import { request } from '@nativephp/all-permission-handler';
+
+// e.g. inside a button click handler
+const code = await request('camera');
+console.log('camera status code', code); // 0 = denied, 1 = granted, …
+```
 
 ## Usage
 

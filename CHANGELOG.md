@@ -4,6 +4,17 @@ All notable changes to `bhargavdetroja/nativephp-all-permission-handle` are docu
 
 The format follows Keep a Changelog principles and semantic versioning.
 
+## [Unreleased]
+
+## [1.0.1] - 2026-04-18
+
+### Fixed
+- Android: map `mediaLibrary` and `access_media_location` in `AllPermissionHandlerFunctions.kt` so they match PHP `PermissionMetadata` (previously these keys always resolved to no Android permissions and stayed denied).
+
+### Changed
+- README: document NativePHP Mobile prerequisites, correct install order (`nativephp-plugins-provider` before `native:plugin:register`), verification command, and a troubleshooting table for common crashes and “missing class” errors.
+- README: add a minimal copy-paste camera permission demo (route, Livewire, and JS).
+
 ## [1.0.0] - 2026-04-15
 
 ### Added

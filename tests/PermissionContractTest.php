@@ -88,4 +88,17 @@ describe('Permission contract', function () {
         expect($enabled)->toContain(Permission::Camera->value);
         expect($enabled)->not->toContain(Permission::Microphone->value);
     });
+
+    it('includes mediaLibrary and access_media_location in Android metadata', function () {
+        $enabled = PermissionMetadata::normalizeEnabledPermissions([
+            Permission::MediaLibrary->value,
+            Permission::AccessMediaLocation->value,
+        ], 'none');
+
+        expect($enabled)->toBe([Permission::MediaLibrary->value, Permission::AccessMediaLocation->value]);
+
+        $android = PermissionMetadata::androidPermissionsFor($enabled);
+        expect($android)->toContain('android.permission.READ_MEDIA_IMAGES');
+        expect($android)->toContain('android.permission.ACCESS_MEDIA_LOCATION');
+    });
 });
